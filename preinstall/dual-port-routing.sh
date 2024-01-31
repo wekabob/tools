@@ -138,11 +138,11 @@ nmcli con mod $NIC2 ipv4.routes "$NIC2_NET table=100" +ipv4.routes "0.0.0.0/0 $G
 
 # check for rule scripts
 echo "Setting Rule Scripts for $NIC1"
-ipv4.routing-rules "priority 32764 from $NIC1_IP table 100"
+nmcli con mod $NIC1 ipv4.routing-rules "priority 32764 from $NIC1_IP table 100"
 
 
 echo "Setting Rule Scripts for $NIC2"
-ipv4.routing-rules "priority 32765 from $NIC2_IP table 101"
+nmcli con mod $NIC2 ipv4.routing-rules "priority 32765 from $NIC2_IP table 101"
 
 
 
