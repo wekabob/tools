@@ -87,15 +87,13 @@ NET_SCRIPTS=/etc/sysconfig/network-scripts
 
 if [ $# -ne 2 ]; then
     echo "Usage: $0 nic_interface1 nic_interface2"
-    echo "or: $0 nic_interface1/gateway1 nic_interface2/gateway2"
     echo "    example: $0 enp59s0f0 enp79s0f0"
-    echo "    optionally: $0 enp59s0f0/10.20.20.254 enp79s0f0/10.20.20.254"
     exit 1
 else
-    NIC1=`echo $1 | awk -F/ '{ print $1 }'`
-    GATEWAY1=`echo $1 | awk -F/ '{ print $2 }'`
-    NIC2=`echo $2 | awk -F/ '{ print $1 }'`
-    GATEWAY2=`echo $2 | awk -F/ '{ print $2 }'`
+    NIC1=`nmcli con show | grep $1 |awk '{print $1}'`
+    GATEWAY1=`nmcli device show $NIC_DEV1 | grep IP4.GATEWAY | head -n 1 | awk '{print $2}'`
+    NIC2=`nmcli con show | grep $2 |awk '{print $1}'`
+    GATEWAY2=`nmcli device show $NIC_DEV2 | grep IP4.GATEWAY | head -n 1 | awk '{print $2}'`
 fi
 
 # check that the nic given are sane and fetch address info - X.X.X.X/nn
@@ -126,7 +124,9 @@ fi
 
 # unit test
 #exit
-
+#example 
+#nmcli con mod ens3f0 ipv4.routes "10.85.163.0/24 table=100" +ipv4.routes "0.0.0.0/0 10.85.163.1 table=100" ipv4.routing-rules "priority 32764 from `10.86.161.104  table 100"
+#nmcli device reapply ens3f0np0;
 # check for route scripts
 echo "Setting Route Scripts for $NIC1"
 nmcli con mod $NIC1 ipv4.routes "$NIC1_NET table=100" +ipv4.routes "0.0.0.0/0 $GATEWAY1 table=100" 
