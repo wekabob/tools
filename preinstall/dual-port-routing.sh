@@ -129,39 +129,21 @@ fi
 
 # check for route scripts
 echo "Setting Route Scripts for $NIC1"
-if [ -f $NET_SCRIPTS/route-$NIC1 ]; then
-    errmsg "$NET_SCRIPTS/route-$NIC1 already exists.  Skipping"
-else
-    echo "$NIC1_NET dev $NIC1 src $NIC1_IP table weka1" > $NET_SCRIPTS/route-$NIC1
-    if [ "$GATEWAY1" != "" ]; then
-        echo "default via $GATEWAY1 dev $NIC1 table weka1" >> $NET_SCRIPTS/route-$NIC1
-    fi
-fi
+nmcli con mod $NIC1 ipv4.routes "$NIC1_NET table=100" +ipv4.routes "0.0.0.0/0 $GATEWAY1 table=100" 
+
 
 echo "Setting Route Scripts for $NIC2"
-if [ -f $NET_SCRIPTS/route-$NIC2 ]; then
-    errmsg "$NET_SCRIPTS/route-$NIC2 already exists.  Skipping"
-else
-    echo "$NIC2_NET dev $NIC2 src $NIC2_IP table weka2" > $NET_SCRIPTS/route-$NIC2
-    if [ "$GATEWAY2" != "" ]; then
-        echo "default via $GATEWAY2 dev $NIC2 table weka2" >> $NET_SCRIPTS/route-$NIC2
-    fi
-fi
+nmcli con mod $NIC2 ipv4.routes "$NIC2_NET table=100" +ipv4.routes "0.0.0.0/0 $GATEWAY2 table=101"
+
 
 # check for rule scripts
 echo "Setting Rule Scripts for $NIC1"
-if [ -f $NET_SCRIPTS/rule-$NIC1 ]; then
-    errmsg "$NET_SCRIPTS/rule-$NIC1 already exists.  Skipping"
-else
-    echo "table weka1 from $NIC1_IP" > $NET_SCRIPTS/rule-$NIC1
-fi
+ipv4.routing-rules "priority 32764 from $NIC1_IP table 100"
+
 
 echo "Setting Rule Scripts for $NIC2"
-if [ -f $NET_SCRIPTS/rule-$NIC2 ]; then
-    errmsg "$NET_SCRIPTS/rule-$NIC2 already exists.  Skipping"
-else
-    echo "table weka2 from $NIC2_IP" > $NET_SCRIPTS/rule-$NIC2
-fi
+ipv4.routing-rules "priority 32765 from $NIC2_IP table 101"
+
 
 
 # check rt_tables
@@ -190,3 +172,6 @@ else
     errmsg "Entries exist in /etc/sysctl.conf"
 fi
 
+# Apply nmcli
+nmcli device reapply $NIC1
+nmcli device reapply $NIC2
