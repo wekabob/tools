@@ -166,6 +166,7 @@ if [ $? != 0 ]; then
     echo "net.ipv4.conf.default.arp_filter = 1"
     echo "net.ipv4.conf.all.arp_announce = 2"
     echo "net.ipv4.conf.default.arp_announce = 2"
+    echo "net.ipv4.conf.all.rp_filter = 2"
     ) >> /etc/sysctl.conf
     sysctl -p /etc/sysctl.conf
 else
