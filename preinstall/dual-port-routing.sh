@@ -91,17 +91,19 @@ if [ $# -ne 2 ]; then
     exit 1
 else
     NIC1=`nmcli con show | grep $1 |awk '{print $1}'`
+    NIC_DEV1=`nmcli con show | grep $1 |awk '{print $4}'`
     GATEWAY1=`nmcli device show $NIC_DEV1 | grep IP4.GATEWAY | head -n 1 | awk '{print $2}'`
     NIC2=`nmcli con show | grep $2 |awk '{print $1}'`
+    NIC_DEV2=`nmcli con show | grep $2 |awk '{print $1}'`
     GATEWAY2=`nmcli device show $NIC_DEV2 | grep IP4.GATEWAY | head -n 1 | awk '{print $2}'`
 fi
 
 # check that the nic given are sane and fetch address info - X.X.X.X/nn
-NIC1_IP_SPEC=`validate_nic $NIC1`
+NIC1_IP_SPEC=`validate_nic $NIC_DEV1`
 if [ $? != 0 ]; then
     exit 1
 fi
-NIC2_IP_SPEC=`validate_nic $NIC2`
+NIC2_IP_SPEC=`validate_nic $NIC_DEV2`
 if [ $? != 0 ]; then
     exit 1
 fi
@@ -133,7 +135,7 @@ nmcli con mod $NIC1 ipv4.routes "$NIC1_NET table=100" +ipv4.routes "0.0.0.0/0 $G
 
 
 echo "Setting Route Scripts for $NIC2"
-nmcli con mod $NIC2 ipv4.routes "$NIC2_NET table=100" +ipv4.routes "0.0.0.0/0 $GATEWAY2 table=101"
+nmcli con mod $NIC2 ipv4.routes "$NIC2_NET table=101" +ipv4.routes "0.0.0.0/0 $GATEWAY2 table=101"
 
 
 # check for rule scripts
@@ -174,5 +176,5 @@ else
 fi
 
 # Apply nmcli
-nmcli device reapply $NIC1
-nmcli device reapply $NIC2
+nmcli device reapply $NIC_DEV1
+nmcli device reapply $NIC_DEV2
