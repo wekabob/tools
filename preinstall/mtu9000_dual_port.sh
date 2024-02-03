@@ -46,6 +46,7 @@ validate_nic()
 # Main
 ###################################################
 
+#Gather Info
 if [ $# -ne 2 ]; then
     echo "Usage: $0 nic_interface1 nic_interface2"
     echo "    example: $0 enp59s0f0 enp79s0f0"
@@ -57,6 +58,15 @@ else
     NIC_DEV2=`nmcli con show | grep $2 |awk '{print $1}'`
 fi
 
+# check that the nic given are sane and fetch address info - X.X.X.X/nn
+NIC1_IP_SPEC=`validate_nic $NIC_DEV1`
+if [ $? != 0 ]; then
+    exit 1
+fi
+NIC2_IP_SPEC=`validate_nic $NIC_DEV2`
+if [ $? != 0 ]; then
+    exit 1
+fi
 
 # unit test
 #exit
