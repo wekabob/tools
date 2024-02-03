@@ -127,7 +127,8 @@ fi
 # unit test
 #exit
 #example 
-#nmcli con mod ens3f0 ipv4.routes "10.85.163.0/24 table=100" +ipv4.routes "0.0.0.0/0 10.85.163.1 table=100" ipv4.routing-rules "priority 32764 from `10.86.161.104  table 100"
+#nmcli con mod ens3f0 ipv4.routes "10.85.163.0/24 table=100" +ipv4.routes "0.0.0.0/0 10.85.163.1 table=100" 
+#nmcli con mod ens3f0 ipv4.routing-rules "priority 32764 from `10.86.161.104  table 100"
 #nmcli device reapply ens3f0np0;
 # check for route scripts
 echo "Setting Route Scripts for $NIC1"
